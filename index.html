@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>HeatStack — AI Cooling Crisis Console</title>
+  <meta name="description" content="A cinematic interactive console that explains the AI cooling crisis and explores current + future solutions." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="noise"></div>
+  <div class="scanlines"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logoMark"></div>
+      <div>
+        <div class="brandName">HeatStack</div>
+        <div class="brandSub mono">AI Cooling Crisis Console</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="#sim">Simulator</a>
+      <a href="#now">Used Today</a>
+      <a href="#future">Future Lab</a>
+      <a href="#arena">Idea Arena</a>
+    </nav>
+
+    <div class="status mono">
+      <span class="dot"></span>
+      <span id="statusText">THERMAL: NOMINAL</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- HERO / DASH -->
+    <section class="card hero" id="top">
+      <div class="heroGrid">
+        <div>
+          <h1>Cooling is becoming the bottleneck of AI.</h1>
+          <p class="muted">
+            GPUs are turning into stovetops. This console shows why heat density is hard, what’s deployed today,
+            and what “next” could look like—without needing real hardware.
+          </p>
+
+          <div class="heroCTA">
+            <a class="btn primary" href="#sim">Start the Simulator</a>
+            <a class="btn ghost" href="#future">Try Future Lab</a>
+          </div>
+
+          <div class="metrics">
+            <div class="metric">
+              <div class="k">Typical GPU Power</div>
+              <div class="v mono" id="mGpuW">700–1200 W</div>
+            </div>
+            <div class="metric">
+              <div class="k">AI Rack Density</div>
+              <div class="v mono" id="mRackKw">80–200 kW</div>
+            </div>
+            <div class="metric">
+              <div class="k">Heat Flux Pressure</div>
+              <div class="v mono" id="mFlux">~1–2 W/mm²</div>
+            </div>
+            <div class="metric">
+              <div class="k">Main Constraint</div>
+              <div class="v mono">Heat removal per area</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hud">
+          <div class="hudTop">
+            <div class="pill mono">LIVE RACK</div>
+            <div class="mono muted" id="hudClock">—</div>
+          </div>
+
+          <div class="rackViz">
+            <div class="rack">
+              <div class="rackGlow" id="rackGlow"></div>
+              <div class="rackLabel mono">RACK THERMAL MAP</div>
+              <div class="rackRows" id="rackRows"></div>
+            </div>
+
+            <div class="hudReadouts">
+              <div class="readout">
+                <div class="k">Rack Power</div>
+                <div class="v mono" id="rRackPower">—</div>
+              </div>
+              <div class="readout">
+                <div class="k">Hotspot Risk</div>
+                <div class="v mono" id="rHotspot">—</div>
+              </div>
+              <div class="readout">
+                <div class="k">Cooling Difficulty</div>
+                <div class="v mono" id="rDifficulty">—</div>
+              </div>
+              <div class="readout">
+                <div class="k">Water / Complexity</div>
+                <div class="v mono" id="rWater">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hudFooter mono muted">
+            Tip: push above 120kW and watch the “physics” bite.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIMULATOR -->
+    <section class="card" id="sim">
+      <div class="cardHead">
+        <div>
+          <h2>Thermal Simulator</h2>
+          <p class="muted">Dial your cluster. See power density + cooling pain points move in real time.</p>
+        </div>
+        <div class="pill mono" id="simMode">SIM</div>
+      </div>
+
+      <div class="simGrid">
+        <div class="panel">
+          <div class="label">Cooling Method</div>
+          <div class="seg" id="coolingSeg">
+            <button data-cool="air" class="on">Air</button>
+            <button data-cool="dtc">Direct-to-chip</button>
+            <button data-cool="imm">Immersion</button>
+            <button data-cool="pcm">PCM Buffer</button>
+            <button data-cool="mag">Magnetocaloric</button>
+          </div>
+
+          <div class="control">
+            <div class="row">
+              <div class="label">GPU power <span class="mono muted" id="gpuWLabel">900 W</span></div>
+              <input id="gpuW" type="range" min="250" max="1500" step="10" value="900" />
+            </div>
+
+            <div class="row">
+              <div class="label">GPUs per server <span class="mono muted" id="gpusPerLabel">8</span></div>
+              <input id="gpusPer" type="range" min="1" max="16" step="1" value="8" />
+            </div>
+
+            <div class="row">
+              <div class="label">Servers per rack <span class="mono muted" id="srvPerLabel">10</span></div>
+              <input id="srvPer" type="range" min="1" max="20" step="1" value="10" />
+            </div>
+
+            <div class="row">
+              <div class="label">Overhead (CPU/Networking/etc.) <span class="mono muted" id="ovhLabel">20%</span></div>
+              <input id="ovh" type="range" min="0" max="60" step="1" value="20" />
+            </div>
+          </div>
+
+          <div class="miniNote muted">
+            This is an intuition simulator, not a full thermofluids solver. It’s designed to teach tradeoffs.
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="label">Output</div>
+
+          <div class="gauges">
+            <div class="gauge">
+              <div class="k">Rack Power</div>
+              <div class="v mono" id="oRackKw">—</div>
+              <div class="bar"><div class="fill" id="bRack"></div></div>
+            </div>
+
+            <div class="gauge">
+              <div class="k">Heat Flux Stress</div>
+              <div class="v mono" id="oFlux">—</div>
+              <div class="bar"><div class="fill" id="bFlux"></div></div>
+            </div>
+
+            <div class="gauge">
+              <div class="k">Hotspot Risk</div>
+              <div class="v mono" id="oHot">—</div>
+              <div class="bar"><div class="fill" id="bHot"></div></div>
+            </div>
+
+            <div class="gauge">
+              <div class="k">Infra Difficulty</div>
+              <div class="v mono" id="oDiff">—</div>
+              <div class="bar"><div class="fill" id="bDiff"></div></div>
+            </div>
+          </div>
+
+          <div class="callout" id="simCallout">
+            Increase density to see why air fails first.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- USED TODAY -->
+    <section class="card" id="now">
+      <div class="cardHead">
+        <div>
+          <h2>Cooling Methods Used Today</h2>
+          <p class="muted">Click a card for the “how it works” + where it fits.</p>
+        </div>
+        <div class="pill mono">DEPLOYED</div>
+      </div>
+
+      <div class="cards" id="nowCards"></div>
+      <div class="drawer" id="drawer" aria-hidden="true">
+        <div class="drawerInner">
+          <div class="drawerTop">
+            <div>
+              <div class="drawerTitle" id="dTitle">—</div>
+              <div class="drawerSub muted" id="dSub">—</div>
+            </div>
+            <button class="btn ghost" id="dClose" type="button">Close</button>
+          </div>
+          <div class="drawerBody" id="dBody"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FUTURE LAB -->
+    <section class="card" id="future">
+      <div class="cardHead">
+        <div>
+          <h2>Future Lab</h2>
+          <p class="muted">Prototype the “next” ideas visually: buffering, scheduling, exotic cooling.</p>
+        </div>
+        <div class="pill mono">R&D</div>
+      </div>
+
+      <div class="futureGrid">
+        <div class="panel">
+          <div class="label">Pick a concept</div>
+          <div class="list" id="futureList"></div>
+        </div>
+
+        <div class="panel">
+          <div class="label">Mini Simulation</div>
+          <canvas id="labCanvas" width="900" height="420"></canvas>
+          <div class="labControls">
+            <div class="chip mono">Load: <span id="labLoad">65%</span></div>
+            <input id="labLoadSlider" type="range" min="0" max="100" step="1" value="65" />
+            <button class="btn primary" id="labRun" type="button">Run</button>
+            <button class="btn ghost" id="labReset" type="button">Reset</button>
+          </div>
+          <div class="callout" id="labCallout">Select an idea on the left, then Run.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- IDEA ARENA -->
+    <section class="card" id="arena">
+      <div class="cardHead">
+        <div>
+          <h2>Idea Arena</h2>
+          <p class="muted">Submit ideas, upvote, and build a public “cooling playbook”.</p>
+        </div>
+        <div class="pill mono" id="arenaMode">LOCAL</div>
+      </div>
+
+      <div class="arenaGrid">
+        <div class="panel">
+          <div class="label">Submit a concept</div>
+          <textarea id="ideaText" rows="4" placeholder="Your idea: what it is, why it helps, and what tradeoff it introduces..."></textarea>
+
+          <div class="row2">
+            <input id="ideaName" placeholder="Name (optional)" />
+            <button class="btn primary" id="ideaSend" type="button">Submit</button>
+          </div>
+
+          <div class="muted" id="ideaMsg" style="margin-top:10px"></div>
+
+          <div class="miniNote muted">
+            Default is local-only (no backend). You can enable Firebase later to make it public.
+          </div>
+
+          <details class="miniNote">
+            <summary class="muted">Enable Firebase (optional)</summary>
+            <p class="muted" style="margin-top:10px">
+              If you want public submissions + voting, paste Firebase config inside <span class="mono">app.js</span> where indicated,
+              then add Firebase scripts before <span class="mono">app.js</span> in <span class="mono">index.html</span>.
+              I’ll guide you when you’re ready.
+            </p>
+          </details>
+        </div>
+
+        <div class="panel">
+          <div class="label">Top Ideas</div>
+          <div class="arenaTools">
+            <button class="btn ghost" id="sortHot" type="button">Sort: Hot</button>
+            <button class="btn ghost" id="sortNew" type="button">Sort: New</button>
+            <button class="btn ghost" id="sortTop" type="button">Sort: Top</button>
+          </div>
+          <div class="ideas" id="ideas"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot mono muted">
+      Built as an interactive explainer. Not a thermofluids solver. Bring your curiosity.
+    </footer>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
