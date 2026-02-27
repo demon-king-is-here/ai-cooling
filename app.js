@@ -724,4 +724,46 @@ function init(){
   labDraw();
 }
 
+
 init();
+
+// --- Code Rain (subtle) ---
+(function codeRain(){
+  const canvas = document.getElementById("codeRain");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  let W=0, H=0, cols=0;
+  let drops = [];
+  const chars = "01<>/{}[]=+-*#@$%";
+  const fontSize = 14;
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    cols = Math.floor(W / fontSize);
+    drops = Array(cols).fill(0).map(()=> Math.random()*H/fontSize);
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  function tick(){
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    ctx.fillRect(0,0,W,H);
+
+    ctx.font = `700 ${fontSize}px ui-monospace, monospace`;
+    for (let i=0;i<cols;i++){
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+      const ch = chars[Math.floor(Math.random()*chars.length)];
+
+      ctx.fillStyle = "rgba(0,255,160,0.55)";
+      ctx.fillText(ch, x, y);
+
+      if (y > H && Math.random() > 0.975) drops[i] = 0;
+      drops[i] += 0.35 + Math.random()*0.25;
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
