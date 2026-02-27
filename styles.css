@@ -461,3 +461,12 @@ textarea{
   .cards{ grid-template-columns: 1fr; }
 
 }
+
+#codeRain{
+  position:fixed;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  opacity:.18;
+  mix-blend-mode:screen;
+}
